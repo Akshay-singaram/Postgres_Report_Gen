@@ -74,39 +74,20 @@ BEGIN
         RETURN;
     END IF;
 
+    -- Data is 1-second sampled: each row with val=1 represents 1 second of runtime.
+    -- Count all rows where value_number = 1 to get total run seconds.
     v_sql := format($q$
         WITH
         raw_events AS (
-            SELECT ts, val FROM (%s) s ORDER BY ts ASC
-        ),
-        transitions AS (
-            SELECT
-                val,
-                LAG(val) OVER (ORDER BY ts) AS prev_val,
-                ts - LAG(ts) OVER (ORDER BY ts) AS duration_ns
-            FROM raw_events
-        ),
-        qualifying AS (
-            SELECT duration_ns FROM transitions
-             WHERE prev_val = 1 AND duration_ns >= %s
-        ),
-        last_event AS (
-            SELECT val, ts FROM raw_events ORDER BY ts DESC LIMIT 1
-        ),
-        open_interval AS (
-            SELECT CASE
-                WHEN l.val = 1 AND (%s - l.ts) >= %s THEN (%s - l.ts)
-                ELSE 0
-            END AS duration_ns FROM last_event l
+            SELECT ts, val FROM (%s) s
         )
         SELECT
-            ROUND((COALESCE((SELECT SUM(duration_ns) FROM qualifying), 0)
-                 + (SELECT duration_ns FROM open_interval)) / 1e9, 2) AS run_seconds,
-            (SELECT COUNT(*) FROM qualifying) AS sample_count
+            COUNT(*)::NUMERIC AS run_seconds,
+            COUNT(*)          AS sample_count
+          FROM raw_events
+         WHERE val = 1
     $q$,
-        v_union_sql,
-        p_debounce_ns,
-        p_end_ns, p_debounce_ns, p_end_ns
+        v_union_sql
     );
 
     RETURN QUERY EXECUTE v_sql;
