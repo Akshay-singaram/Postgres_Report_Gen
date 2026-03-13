@@ -14,22 +14,25 @@ import os
 import sys
 from datetime import datetime, timezone
 
-import psycopg2
 from dotenv import load_dotenv
 
-from equipment import DEBOUNCE_SECONDS, EQUIPMENT
 from db.queries import (
-    get_run_hours_pump_01,
-    get_run_hours_pump_02,
-    get_run_hours_fan_01,
-    get_run_hours_fan_02,
-    get_run_hours_air_comp_01,
-    get_run_hours_pump_03,
-    get_run_hours_fan_03,
-    get_run_hours_air_comp_02,
-    get_run_hours_conv_01,
-    get_run_hours_mixer_01,
+    get_connection,
+    get_run_hours_fn_0504,
+    get_run_hours_fn_0501b,
+    get_run_hours_fn_0501a,
+    get_run_hours_fn_0801a3,
+    get_run_hours_fn_0801a4,
+    get_run_hours_p_0801a1,
+    get_run_hours_p_0801a2,
+    get_run_hours_p_0802a,
+    get_run_hours_p_0802b,
+    get_run_hours_fn_1702,
+    get_run_hours_p_1701,
+    get_run_hours_fn_2002,
+    get_run_hours_p_2001,
 )
+from equipment import EQUIPMENT, DEBOUNCE_SECONDS
 from report.generator import generate_report
 
 # ---------------------------------------------------------------------------
@@ -49,20 +52,6 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
-
-
-# ---------------------------------------------------------------------------
-# Database connection
-# ---------------------------------------------------------------------------
-def get_connection():
-    """Create and return a psycopg2 connection using .env credentials."""
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=int(os.getenv("DB_PORT", "5432")),
-        dbname=os.getenv("DB_NAME", "winccoa_db"),
-        user=os.getenv("DB_USER", "winccoa"),
-        password=os.getenv("DB_PASSWORD", ""),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -157,103 +146,19 @@ def main():
     logger.info("Querying equipment run hours since last maintenance...")
 
     results = []
-
-    # PUMP-01
-    results.append(build_result(
-        EQUIPMENT[0],
-        safe_query(get_run_hours_pump_01, conn, EQUIPMENT[0], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # PUMP-02
-    results.append(build_result(
-        EQUIPMENT[1],
-        safe_query(get_run_hours_pump_02, conn, EQUIPMENT[1], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # FAN-01
-    results.append(build_result(
-        EQUIPMENT[2],
-        safe_query(get_run_hours_fan_01, conn, EQUIPMENT[2], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # FAN-02
-    results.append(build_result(
-        EQUIPMENT[3],
-        safe_query(get_run_hours_fan_02, conn, EQUIPMENT[3], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # AIR-COMP-01
-    results.append(build_result(
-        EQUIPMENT[4],
-        safe_query(get_run_hours_air_comp_01, conn, EQUIPMENT[4], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # PUMP-03
-    results.append(build_result(
-        EQUIPMENT[5],
-        safe_query(get_run_hours_pump_03, conn, EQUIPMENT[5], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # FAN-03
-    results.append(build_result(
-        EQUIPMENT[6],
-        safe_query(get_run_hours_fan_03, conn, EQUIPMENT[6], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # AIR-COMP-02
-    results.append(build_result(
-        EQUIPMENT[7],
-        safe_query(get_run_hours_air_comp_02, conn, EQUIPMENT[7], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # CONV-01
-    results.append(build_result(
-        EQUIPMENT[8],
-        safe_query(get_run_hours_conv_01, conn, EQUIPMENT[8], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-    # MIXER-01
-    results.append(build_result(
-        EQUIPMENT[9],
-        safe_query(get_run_hours_mixer_01, conn, EQUIPMENT[9], now, DEBOUNCE_SECONDS),
-        now,
-    ))
-
-    # ------------------------------------------------------------------
-    # Query lifetime hours for each equipment
-    # ------------------------------------------------------------------
-    logger.info("Querying lifetime run hours...")
-
-    results[0]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_pump_01, conn, EQUIPMENT[0], now, DEBOUNCE_SECONDS
-    )
-    results[1]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_pump_02, conn, EQUIPMENT[1], now, DEBOUNCE_SECONDS
-    )
-    results[2]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_fan_01, conn, EQUIPMENT[2], now, DEBOUNCE_SECONDS
-    )
-    results[3]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_fan_02, conn, EQUIPMENT[3], now, DEBOUNCE_SECONDS
-    )
-    results[4]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_air_comp_01, conn, EQUIPMENT[4], now, DEBOUNCE_SECONDS
-    )
-    results[5]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_pump_03, conn, EQUIPMENT[5], now, DEBOUNCE_SECONDS
-    )
-    results[6]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_fan_03, conn, EQUIPMENT[6], now, DEBOUNCE_SECONDS
-    )
-    results[7]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_air_comp_02, conn, EQUIPMENT[7], now, DEBOUNCE_SECONDS
-    )
-    results[8]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_conv_01, conn, EQUIPMENT[8], now, DEBOUNCE_SECONDS
-    )
-    results[9]["run_hours_lifetime"] = safe_lifetime_query(
-        get_run_hours_mixer_01, conn, EQUIPMENT[9], now, DEBOUNCE_SECONDS
-    )
+    results.append(build_result(EQUIPMENT[0],  get_run_hours_fn_0504(conn,    EQUIPMENT[0]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[1],  get_run_hours_fn_0501b(conn,   EQUIPMENT[1]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[2],  get_run_hours_fn_0501a(conn,   EQUIPMENT[2]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[3],  get_run_hours_fn_0801a3(conn,  EQUIPMENT[3]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[4],  get_run_hours_fn_0801a4(conn,  EQUIPMENT[4]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[5],  get_run_hours_p_0801a1(conn,   EQUIPMENT[5]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[6],  get_run_hours_p_0801a2(conn,   EQUIPMENT[6]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[7],  get_run_hours_p_0802a(conn,    EQUIPMENT[7]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[8],  get_run_hours_p_0802b(conn,    EQUIPMENT[8]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[9],  get_run_hours_fn_1702(conn,    EQUIPMENT[9]["last_maintenance"],  now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[10], get_run_hours_p_1701(conn,     EQUIPMENT[10]["last_maintenance"], now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[11], get_run_hours_fn_2002(conn,    EQUIPMENT[11]["last_maintenance"], now, DEBOUNCE_SECONDS), now))
+    results.append(build_result(EQUIPMENT[12], get_run_hours_p_2001(conn,     EQUIPMENT[12]["last_maintenance"], now, DEBOUNCE_SECONDS), now))
 
     conn.close()
     logger.info("Database connection closed.")
