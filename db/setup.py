@@ -119,11 +119,11 @@ def main():
     """Connect to the database and deploy the SQL function."""
     try:
         conn = psycopg2.connect(
-            host=os.getenv("DB_HOST", "localhost"),
+            host=os.getenv("DB_HOST", "127.0.0.1"),
             port=int(os.getenv("DB_PORT", "5432")),
-            dbname=os.getenv("DB_NAME", "winccoa_db"),
-            user=os.getenv("DB_USER", "winccoa"),
-            password=os.getenv("DB_PASSWORD", ""),
+            dbname=os.getenv("DB_NAME", "winccoa"),
+            user=os.getenv("DB_USER", "postgres"),
+            password=os.getenv("DB_PASSWORD", "AthenaHistorianStation123"),
         )
         conn.autocommit = True
         print("[setup] Connected to database.")
