@@ -65,8 +65,7 @@ No GUI — all equipment data is hardcoded in Python. Designed to run unattended
 ## Quick Start
 
 ```bash
-# 1. Clone and navigate to the project
-cd maintenance_tracker
+# 1. Clone and navigate to the project root
 
 # 2. Create and activate a virtual environment
 python -m venv venv
@@ -342,7 +341,6 @@ results[10]["run_hours_lifetime"] = safe_lifetime_query(
 ## Project Structure
 
 ```
-maintenance_tracker/
 ├── db/
 │   ├── __init__.py
 │   ├── setup.py            # Deploys the SQL function to PostgreSQL (run once)

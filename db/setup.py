@@ -16,7 +16,7 @@ import psycopg2
 from dotenv import load_dotenv
 
 # Load .env from the maintenance_tracker root directory
-load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))  # loads from project root
 
 SQL_FUNCTION = r"""
 CREATE OR REPLACE FUNCTION get_equipment_run_hours(
