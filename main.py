@@ -149,22 +149,12 @@ def main():
     # Ensure the SQL function exists (auto-deploy if missing)
     # ------------------------------------------------------------------
     try:
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT 1 FROM pg_proc WHERE proname = 'get_equipment_run_hours'"
-            )
-            fn_exists = cur.fetchone() is not None
-        conn.commit()  # close the transaction before changing autocommit
-
-        if fn_exists:
-            logger.info("SQL function get_equipment_run_hours is present.")
-        else:
-            logger.info("SQL function not found — deploying get_equipment_run_hours...")
-            conn.autocommit = True
-            with conn.cursor() as deploy_cur:
-                deploy_cur.execute(SQL_FUNCTION)
-            conn.autocommit = False
-            logger.info("SQL function deployed successfully.")
+        conn.commit()  # close any open transaction before changing autocommit
+        conn.autocommit = True
+        with conn.cursor() as deploy_cur:
+            deploy_cur.execute(SQL_FUNCTION)
+        conn.autocommit = False
+        logger.info("SQL function get_equipment_run_hours deployed.")
     except Exception as e:
         logger.error("Failed to verify/deploy SQL function: %s", e)
         sys.exit(1)
