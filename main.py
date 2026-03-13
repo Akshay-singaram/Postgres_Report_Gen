@@ -72,7 +72,11 @@ def build_result(equip: dict, query_result: dict, now: datetime) -> dict:
 
     if avg_daily_hours > 0:
         days_to_next = hours_remaining / avg_daily_hours
-        projected_date = now + __import__("datetime").timedelta(days=days_to_next)
+        # Cap at 10 years to avoid OverflowError on date arithmetic
+        if days_to_next > 3650:
+            projected_date = None
+        else:
+            projected_date = now + __import__("datetime").timedelta(days=days_to_next)
     else:
         projected_date = None
 
