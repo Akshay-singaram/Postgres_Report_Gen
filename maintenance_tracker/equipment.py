@@ -1,0 +1,98 @@
+from datetime import datetime, timezone
+
+# Debounce threshold in seconds — filters out signal transitions shorter than this
+# to reject electrical noise and false starts
+DEBOUNCE_SECONDS = 30
+
+EQUIPMENT = [
+    {
+        "id": "PUMP-01",
+        "label": "Cooling Water Pump 1",
+        "type": "pump",
+        "commissioned": datetime(2021, 3, 15, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 11, 10, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 2000,
+        "notes": "Replaced bearing last service",
+    },
+    {
+        "id": "PUMP-02",
+        "label": "Process Feed Pump 2",
+        "type": "pump",
+        "commissioned": datetime(2021, 3, 15, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 10, 5, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 2000,
+        "notes": "",
+    },
+    {
+        "id": "FAN-01",
+        "label": "Exhaust Fan 1",
+        "type": "fan",
+        "commissioned": datetime(2020, 8, 1, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 9, 22, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 3000,
+        "notes": "",
+    },
+    {
+        "id": "FAN-02",
+        "label": "Exhaust Fan 2 (VFD)",
+        "type": "fan_vfd",
+        "commissioned": datetime(2021, 6, 1, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 10, 1, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 3000,
+        "notes": "",
+    },
+    {
+        "id": "AIR-COMP-01",
+        "label": "Air Compressor 1",
+        "type": "compressor",
+        "commissioned": datetime(2020, 3, 10, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 8, 15, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 4000,
+        "notes": "Oil changed last service",
+    },
+    {
+        "id": "PUMP-03",
+        "label": "Chilled Water Pump 3",
+        "type": "pump",
+        "commissioned": datetime(2022, 1, 20, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 12, 1, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 2000,
+        "notes": "",
+    },
+    {
+        "id": "FAN-03",
+        "label": "Supply Air Fan 3",
+        "type": "fan",
+        "commissioned": datetime(2020, 11, 15, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 7, 10, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 3000,
+        "notes": "",
+    },
+    {
+        "id": "AIR-COMP-02",
+        "label": "Air Compressor 2",
+        "type": "compressor",
+        "commissioned": datetime(2021, 5, 1, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 9, 1, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 4000,
+        "notes": "",
+    },
+    {
+        "id": "CONV-01",
+        "label": "Main Conveyor Belt 1",
+        "type": "conveyor",
+        "commissioned": datetime(2019, 12, 1, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 11, 20, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 5000,
+        "notes": "Belt tension adjusted last service",
+    },
+    {
+        "id": "MIXER-01",
+        "label": "Batch Mixer 1",
+        "type": "mixer",
+        "commissioned": datetime(2021, 9, 1, tzinfo=timezone.utc),
+        "last_maintenance": datetime(2024, 10, 15, tzinfo=timezone.utc),
+        "maintenance_interval_hours": 2500,
+        "notes": "",
+    },
+]
